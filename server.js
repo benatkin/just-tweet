@@ -51,7 +51,6 @@ app.configure('development', function() {
 });
 
 app.get('/', function(req, res) {
-  console.log('session', req.session);
   var context = { message: req.session.message };
   delete req.session.message;
   if (req.isAuthenticated()) {
@@ -85,7 +84,6 @@ app.post('/', function(req, res) {
         req.session.message = 'Authentication error. Please sign in again.';
         req.logout();
       } else {
-        console.log(data);
         req.session.message = 'Unknown error.';
       }
       res.redirect('/');

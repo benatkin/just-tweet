@@ -64,14 +64,3 @@ auth.addRoutes = function() {
     res.redirect('/');
   });
 }
-
-auth.oauth = function(user) {
-  console.log(arguments);
-  return {
-    consumer_key: this.app.get('twitter_consumer_key'),
-    consumer_secret: this.app.get('twitter_consumer_secret'),
-    token: user.token,
-    token_secret: user.tokenSecret,
-    version: "1.0A"
-  };
-}
