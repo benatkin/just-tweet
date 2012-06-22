@@ -19,7 +19,7 @@ Run `heroku create myappname`. Yes, Heroku did switch to using cedar!
 
 ## 2. Register a Twitter app
 
-[Go to twitter's developer page and register an app. Set the callback url to `https://myappname.herokuapp.com/auth/callback`. Yes this is protected with SSL! If you try accessing it without SSL, it will redirect.
+[Go to twitter's developer page and register an app.](https://dev.twitter.com/apps/new) Set the callback url to `https://myappname.herokuapp.com/auth/callback`. Yes this is protected with SSL! If you try accessing it without SSL, it will redirect.
 
 ## 3. Configure the app
 
@@ -62,6 +62,19 @@ source /path/to/config_file.sh
 npm install -g supervisor
 supervisor server.js
 ```
+
+# Privacy Policy
+
+Twitter's API TOS requires me to have a privacy policy, and to say how I use cookies.
+
+Cookies are only used to hold simple sessions, containing your username and OAuth
+credentials. The credentials are encrypted using [yummy](https://github.com/shtylman/node-yummy). These aren't stored in a database on the server, but only pass through the server when making requests.
+
+Tweets are sent when clicking the tweet button. The text in the tweet box is sent verbatim.
+
+I am not using any analytics service on the site.
+
+This policy may change, and when it is, it will be updated here.
 
 # LICENSE
 
