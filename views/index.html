@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Just Tweet!</title>
+    <style type="text/css">
+      textarea { resize: none; }
+      .message { font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <form action="/" method="POST">
+      {{#message}}
+      <p class="message">{{message}}</p>
+      {{/message}}
+      <p><textarea name="status" rows="3" cols="60"></textarea></p>
+      <p><input type="submit" value="Tweet!" /></p>
+      <p>Tweeting as @{{username}}. <a href="/logout">Log out.</a></p>
+    </form>
+  </body>
+</html>
