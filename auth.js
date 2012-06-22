@@ -1,9 +1,14 @@
-var passport = require('passport')
+var express = require('express')
+  , passport = require('passport')
   , url = require('url')
-  , TwitterStrategy = require('passport-twitter').Strategy;
+  , TwitterStrategy = require('passport-twitter').Strategy
+  , yummy = require('yummy')
+  , oauth = require('oauth');
 
-var auth = module.exports = function(app) {
-  auth.app = app;
+var app;
+
+var auth = module.exports = function(_app) {
+  app = _app;
   return auth;
 }
 
@@ -30,12 +35,26 @@ passport.deserializeUser = function(userDoc, done) {
   done(null, userDoc);
 }
 
+auth.config = function() {
+  [
+    'session_secret',
+    'twitter_consumer_key',
+    'twitter_consumer_secret',
+    'twitter_callback_url'
+  ].forEach(function(confvar) {
+    var envvar = confvar.toUpperCase();
+    app.set(confvar, process.env[envvar]);
+    if (!app.get(confvar)) {
+      throw new Error('Environment variable not specified: ' + envvar);
+    }
+  });
+}
+
 auth.init = function() {
-  var app = this.app;
   passport.use(new TwitterStrategy({
-    consumerKey: this.app.get('twitter_consumer_key'),
-    consumerSecret: this.app.get('twitter_consumer_secret'),
-    callbackURL: this.app.get('twitter_callback_url')
+    consumerKey: app.get('twitter_consumer_key'),
+    consumerSecret: app.get('twitter_consumer_secret'),
+    callbackURL: app.get('twitter_callback_url')
   },
   function(token, tokenSecret, profile, done) {
     return done(null, {
@@ -44,12 +63,30 @@ auth.init = function() {
       username: profile.username
     });
   }));
+
+  this.consumer = new oauth.OAuth(
+    "https://twitter.com/oauth/request_token",
+    "https://twitter.com/oauth/access_token", 
+    app.get('twitter_consumer_key'),
+    app.get('twitter_consumer_secret'),
+    "1.0A",
+    "http://localhost:3000/auth/callback",
+    "HMAC-SHA1"
+  );
+}
+
+auth.initSession = function() {
+  app.use(express.cookieParser());
+  app.use(yummy({secret: app.get('session_secret')}));
+  app.use(passport.initialize());
+  app.use(passport.session());
 }
 
 auth.addRoutes = function() {
-  var app = this.app;
-
   app.get('/auth', passport.authenticate('twitter'));
+
+  // TODO: provide middleware that renders login page if not logged in
+  // TODO: provide copy/paste setup page when auth isn't configured
 
   app.get('/auth/callback', 
     passport.authenticate('twitter', { failureRedirect: '/' }),

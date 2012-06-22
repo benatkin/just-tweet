@@ -1,47 +1,26 @@
 var express = require('express')
-  , cons = require('consolidate')
-  , yummy = require('yummy')
-  , oauth = require('oauth');
+  , cons = require('consolidate');
 
 var app = module.exports = express()
-  , auth = require('./auth')(app)
-  , passport = auth.passport;
-
-[
-  'session_secret',
-  'twitter_consumer_key',
-  'twitter_consumer_secret',
-  'twitter_callback_url'
-].forEach(function(confvar) {
-  var envvar = confvar.toUpperCase();
-  app.set(confvar, process.env[envvar]);
-  if (!app.get(confvar)) {
-    throw new Error('Environment variable not specified: ' + envvar);
-  }
-});
+  , auth = require('./auth')(app);
 
 app.engine('html', cons.hogan);
 app.set('view engine', 'html');
 
 app.configure(function() {
   app.use(express.logger());
+  app.use(express.bodyParser());
 });
 
 app.configure('production', function() {
   app.use(auth.forceSSL);
 });
 
-app.configure(function() {
-  app.use(express.bodyParser());
-  app.use(express.cookieParser());
-  app.use(yummy({secret: app.get('session_secret')}));
-});
-
+auth.config();
 auth.init();
+auth.initSession();
 
 app.configure(function() {
-  app.use(passport.initialize());
-  app.use(passport.session());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -62,16 +41,7 @@ app.get('/', function(req, res) {
 });
 
 app.post('/', function(req, res) {
-  var consumer = new oauth.OAuth(
-    "https://twitter.com/oauth/request_token",
-    "https://twitter.com/oauth/access_token", 
-    app.get('twitter_consumer_key'),
-    app.get('twitter_consumer_secret'),
-    "1.0A",
-    "http://localhost:3000/auth/callback",
-    "HMAC-SHA1"
-  );
-  consumer.post(
+  auth.consumer.post(
     'http://api.twitter.com/statuses/update.json',
     req.user.token,
     req.user.tokenSecret,
