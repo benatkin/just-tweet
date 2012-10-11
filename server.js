@@ -81,7 +81,7 @@ app.use(express.logger());
 app.use(express.bodyParser());
 
 app.configure('production', function() {
-  app.use(auth.forceSSL);
+  app.use(forceSSL);
 });
 
 app.use(express.cookieParser());
