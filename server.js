@@ -54,6 +54,7 @@ app.post('/', function(req, res) {
         req.session.message = 'Authentication error. Please sign in again.';
         req.logout();
       } else {
+        console.error('Error sending tweet.', twitter_resp);
         req.session.message = 'Unknown error.';
       }
       res.redirect('/');
