@@ -80,21 +80,18 @@ app.engine('html', cons.hogan);
 app.set('view engine', 'html');
 
 app.use(express.logger());
-app.use(express.bodyParser());
 
 app.configure('production', function() {
   app.use(forceSSL);
 });
 
+app.use(express.bodyParser());
 app.use(express.cookieParser());
 app.use(yummy({secret: process.env.SESSION_SECRET}));
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.configure(function() {
-  app.use(express.static(__dirname + '/public'));
-  app.use(app.router);
-});
+app.use(express.static(__dirname + '/public'));
+app.use(app.router);
 
 app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
