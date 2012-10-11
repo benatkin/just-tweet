@@ -8,6 +8,7 @@ var express = require('express')
   , oauth = require('oauth');
 
 // Check config
+// ------------
 
 [
   'SESSION_SECRET',
@@ -21,6 +22,7 @@ var express = require('express')
 });
 
 // Set up passport
+// ---------------
 
 passport.serializeUser = function(user, done) {
   done(null, user);
