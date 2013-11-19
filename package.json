@@ -10,8 +10,8 @@
     "express": "3.x",
     "hogan.js": "*",
     "oauth": "*",
-    "passport": "*",
-    "passport-twitter": "*",
+    "passport": "0.1.17",
+    "passport-twitter": "1.0.2",
     "yummy": "*"
   }
 }
